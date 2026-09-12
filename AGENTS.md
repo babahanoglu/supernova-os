@@ -1,163 +1,98 @@
-# agents.md
+# Supernova
 
-## Purpose
+Supernova is an opinionated development environment built on Pi. The Pi SDK owns agent execution; we build the desktop and browser experience, session workflows, and recovery around it.
 
-This project (`supernova`) is a desktop GUI for interacting with a Pi-based coding agent.
+## What we care about
 
-The goal is to build a **custom, opinionated user interface** for agent-driven coding workflows without reimplementing the agent itself.
+- **Speed is a feature.** Long sessions, rapid streams, and dense timelines should stay responsive. Consider rendering, network, and runtime costs, not only the empty-screen experience.
+- **Correctness before convenience.** Keep behavior predictable through reconnects, session restarts, and partial streams. A simpler implementation is not a win if it loses work or hides failure.
+- **Polish is part of the work.** Loading states, keyboard interaction, scrolling, spacing, and transitions belong to the feature, not a later cleanup pass.
+- **Remote by design.** The server owns execution, credentials, and workspace access. Paths refer to the server's machine. Desktop is a shell, not a second runtime.
 
-The Pi SDK is used as the execution engine (https://pi.dev/docs). This repository focuses on:
+## How to work
 
-- UI/UX
-- interaction model
-- feature layer (todos, planning, subagents, etc.)
+Understand the constraint, then choose the smallest change that makes the correct behavior clear. We want simple systems, not machinery that looks impressive.
 
-The goal is for Supernova to be fast, performant and have an ultra-polished user experience.
+### Think before coding
 
-### Core Priorities
+- State assumptions that affect the result. If multiple interpretations would lead to different implementations, lay them out rather than silently choosing one.
+- Name uncertainty. When an ambiguity changes scope, behavior, or safety, ask before proceeding; don't code around something you haven't understood.
+- Surface tradeoffs and point out simpler approaches. Push back when the requested approach adds complexity without solving a real constraint.
+- Understand the actual flow before choosing a shortcut. For bugs, inspect callers and sibling paths, then fix the root cause at the shared boundary rather than patching only the reported symptom.
 
-1. Performance first.
-2. Reliability first.
-3. Keep behavior predictable under load and during failures (session restarts, reconnects, partial streams).
+### Simplicity first
 
-If a tradeoff is required, choose correctness and robustness over short-term convenience.
+After understanding the problem, stop at the first option that meets the requirements:
 
-## High-Level Architecture
+1. **Does this need to exist?** Skip speculative work; explain what concrete need would justify it.
+2. **Does the codebase already solve it?** Look for existing helpers, types, components, and patterns before writing replacements.
+3. **Does the standard library or platform cover it?** Prefer built-in behavior over custom machinery: CSS over JavaScript layout logic, native capabilities over a new dependency, while preserving the app's design and accessibility conventions.
+4. **Does an installed dependency solve it?** Use it before adding another. Don't add a dependency for something a few clear lines can do.
+5. **Only then, write custom code.** Keep it as small and direct as correctness and readability allow.
 
-```text
-apps/server    → Headless Node API + user-facing CLI. Owns Pi runtime, workspace access, and HTTP/WebSocket APIs. Never hosts or bundles the UI.
-apps/desktop   → Electron shell. Starts a local API child and loads its own bundled web UI.
+- No speculative features, configurability, or scaffolding for later. Extract shared behavior for real duplication, not hypothetical future callers. Avoid single-use factories and interfaces that add no meaningful boundary.
+- Prefer removing unnecessary machinery over adding another layer. Keep the diff and number of files small, but don't compress code into clever one-liners or bypass established ownership boundaries.
+- Handle real failure modes, not impossible scenarios already ruled out by the boundary. Don't preserve backward compatibility unless requested.
+- Never simplify away trust-boundary validation, protection against data loss, security, accessibility, or explicitly requested behavior. Among equally simple options, choose the one that handles real edge cases correctly.
+- When a deliberate simplification has a known limit, document that limit and the condition for revisiting it near the code. Obvious code needs no comment defending its simplicity.
+- Review the result for unnecessary machinery. If a substantially smaller implementation would be equally clear and correct, simplify it before calling the work done.
 
-packages/web            → Independently hosted React/Vite client bundle. No native/filesystem assumptions.
-packages/agent-runtime  → Agent runtime services and provider SDK integrations (Node-only), consumed by the server.
-packages/contracts      → Shared Effect schemas, RPC definitions, and domain contracts used by server and web.
-```
+### Surgical changes
 
-### Runtime Model
+- Read enough surrounding code to understand the change; read files fully for audits and broad rewrites. Match existing style and conventions.
+- Don't improve adjacent code, comments, or formatting just because you're there. Refactor only where the requested change needs it.
+- Remove imports, variables, functions, and other code that your changes make unused. Flag unrelated dead code rather than deleting it.
+- Every changed line should serve the requested outcome. Ask before removing intentional functionality outside the agreed scope.
 
-```text
-Standalone server:
-user terminal → supernova-server → server owns runtime/filesystem/workspaces (no UI)
+### Goal-driven execution
 
-Browser development:
-dev launcher → local API child + Vite UI host → browser connects through the UI host's WebSocket proxy
+- Turn the request into observable success criteria before implementing. “Make it work” is not a verification plan.
+- For a bug fix, reproduce the failure with a focused regression test, then make it pass. For validation, cover invalid inputs and the expected failures. For a refactor, verify that behavior is preserved before and after.
+- For multi-step work, give a short plan pairing each step with how you'll verify it. Keep routine, trivial edits lightweight.
+- Run relevant checks, fix failures caused by your changes, and repeat until the success criteria are met or you're genuinely blocked. Don't stop at the first implementation when verification is part of the task.
+- Report what you checked and what remains unverified. Scale verification to the risk; a typo fix does not need a full test run.
 
-Desktop app:
-Electron app → spawns bundled API on an OS-assigned port → BrowserWindow loads supernova://app and connects to the API endpoint supplied by preload
-```
+### Working boundaries
 
-- The **server process** is the authority for native capabilities: Pi runtime, workspace filesystem access, subprocesses, shell/git, credentials, sessions, and API/WebSocket routing.
-- The **web package** is a pure client UI. It must communicate with server APIs and must not assume browser-local filesystem/native access.
-- The **contracts package** defines shared API/RPC boundaries and serializable domain types. Keep it environment-neutral and free of runtime ownership logic.
-- The **desktop app** is a convenience shell and OS integration layer. It owns bundled renderer asset loading, not API web serving or Pi runtime logic.
-- Remote/LAN browser access means operations happen on the machine running `apps/server`, not the machine running the browser.
+Don't overwrite unrelated work or use live sessions, credentials, or workspace state as disposable test fixtures. Ask before destructive actions or restarting processes you didn't start. If a task conflicts with repository guidance, call out the conflict and get confirmation before overriding it.
 
-## Tech Stack
+## Where code lives
 
-```text
-Runtime:
-- Bun (package manager, scripts, workspace)
+| Path                     | Owns                                                                                                |
+| ------------------------ | --------------------------------------------------------------------------------------------------- |
+| `apps/server`            | Headless Node API, CLI, runtime composition, HTTP/WebSocket routing. Never hosts or bundles the UI. |
+| `apps/desktop`           | Electron shell, bundled renderer loading, local API child, OS integration.                          |
+| `packages/web`           | React/Vite client. No native or filesystem assumptions.                                             |
+| `packages/agent-runtime` | Node-only Pi integration, runtime services, sessions, and streams.                                  |
+| `packages/contracts`     | Environment-neutral Effect schemas, RPC definitions, and serializable domain types.                 |
 
-Monorepo:
-- Turborepo
+Use Bun for dependencies and scripts, TypeScript for code, and workspace packages for shared boundaries. Run verification commands from the repository root; this is a Turborepo workspace.
 
-Frontend:
-- React
-- TypeScript
-- Vite
+## Read what the task needs
 
-Desktop:
-- Electron
+This is the repository's only `AGENTS.md`. Shared and area-specific conventions live in `docs/internal/`; don't add nested instruction files. Read the relevant guide when working in its area, not the whole table before every edit.
 
-Agent:
-- @earendil-works/pi-coding-agent
+| When working on…                                               | Read                                                    |
+| -------------------------------------------------------------- | ------------------------------------------------------- |
+| Product direction and feature tradeoffs                        | [Product](docs/internal/product.md)                     |
+| Package boundaries, runtime ownership, desktop/browser hosting | [Architecture](docs/internal/architecture.md)           |
+| TypeScript implementation and code organization                | [Coding standards](docs/internal/coding-standards.md)   |
+| React UI, styling, client state, RPC hooks                     | [Web](docs/internal/web.md)                             |
+| Runtime services, provider integration, layer organization     | [Agent runtime](docs/internal/agent-runtime.md)         |
+| Shared schemas, RPC payloads, errors, exports                  | [Contracts](docs/internal/contracts.md)                 |
+| Sessions, streaming, reconnects, committed/live state          | [Session runtime](docs/internal/session-runtime.md)     |
+| Checkpoint capture, restore, Git preservation                  | [Checkpoint system](docs/internal/checkpoint-system.md) |
+| Local setup, verification, test conventions                    | [Development](docs/internal/development.md)             |
+| Desktop icon assets and generation                             | [Icons](docs/internal/icons.md)                         |
+| Changelog entries and publishing releases                      | [Release](docs/internal/release.md)                     |
+| Writing or reorganizing documentation                          | [Documentation](docs/internal/documentation.md)         |
 
-Architecture:
-- Effect (for services / runtime composition)
-```
+When comparing other projects or checking upstream patterns, look in `.context/` first. Available references include `.context/pi`, `.context/effect-smol`, and `.context/effect-solutions`; inspect the directory rather than assuming a mirror exists.
 
-### Rules
+## Documentation
 
-- Use **Bun** for all package management and scripts (`bun install`, `bun run`)
-- Do not mix npm/yarn/pnpm unless strictly required by external tooling
-- Use **workspace packages** (`apps/*`, `packages/*`)
-- Prefer **TypeScript everywhere**
-- Always run verification commands from the repository root because this is a Turborepo workspace:
-  - `bun run test`
-  - `bun run typecheck`
-  - `bun run lint`
-  - `bun run prettier`
-- Before editing a file, check whether its package directory contain a nested `AGENTS.md` and read it. Follow those local instructions in addition to this root file for files under that scope.
+`docs/` contains guides for people **using** Supernova. `docs/internal/` contains conventions, architectural decisions, and procedures for people and agents **building** it.
 
-## Reference Repositories
+Keep one home for each subject and link to it elsewhere. Update the section that became inaccurate rather than appending a work log. Document constraints and reasoning the code cannot explain; don't maintain a prose copy of the implementation.
 
-Additional repositories may be cloned under `.context/` to provide local context. When a user asks how other projects solve a problem, implement a pattern, or structure similar functionality, check `.context/` first before looking elsewhere.
-
-Known useful references include:
-
-- `.context/effect` for Effect examples, internals, and idioms.
-- `.context/pi` for Pi SDK and related monorepo patterns.
-
-Other repositories may also be present in `.context/`; inspect the directory when broader examples would help.
-
-## Maintainability
-
-Long term maintainability is a core priority. If you add new functionality, first check if there is shared logic that can be extracted to a separate module. Duplicate logic across multiple files is a code smell and should be avoided. Don't be afraid to change existing code. Don't take shortcuts by just adding local logic to solve a problem.
-
-## Code Standards
-
-- Favor readability over micro-optimizations: straightforward control flow, early returns, and clear naming. Extract constants for magic numbers/strings and keep inline styles minimal (lean on classes or computed style helpers).
-- Use `import type` for types; keep strings double-quoted and favor `const` over `let`.
-- Use kebab-case for files and folders.
-- Read files in full before making wide-ranging changes, before editing files you have not already fully inspected, and when the user asks you to investigate or audit something. Do not rely only on search snippets for broad changes.
-- Single-line helper functions with a single call site are forbidden; inline them instead.
-- Always ask before removing functionality or code that appears to be intentional.
-- Do not preserve backward compatibility unless the user explicitly asks for it.
-
-### Imports and logging
-
-- Prefer package or path aliases (`@/...`, `@assets/...`, `@supernova/...`) over deep relative imports. Never use relative path imports (`./...` or `../...`).
-- Follow package-specific import guidance when it is more precise, such as using `@supernova/agent-runtime/...` for source imports that must typecheck from dependent packages.
-- Never include TypeScript file extensions in imports (`.ts` or `.tsx`).
-- Do not create local `index.ts` barrel files.
-- Keep logging minimal and purposeful; remove noisy debug output when not needed.
-
-### Implementation Logic
-
-Keep procedure logic, shared helpers, mappers, resolvers, factories, builders, classes, state holders, and lifecycle coordinators easy to scan and understand. Use these rules by role, not by folder name: an implementation file under `operations` can need them just as much as one under `lib`.
-
-- Order function declarations from top to bottom as non-exported functions, then exported functions.
-- If a function uses a named `Options` input type or interface for its arguments, then place it directly above the function that uses it.
-- Add small TSDoc comments to exported functions, exported classes, and public methods on exported classes.
-- Add small TSDoc comments to non-exported functions, classes, and methods when their behavior is not trivial.
-
-## User override
-
-If the user instructions conflict with rules set out here, ask for confirmation that they want to override the rules. Only then execute their instructions.
-
-## Changelog
-
-Location: `CHANGELOG.md` at the repository root.
-
-Sections under `## [Unreleased]`: `### Breaking Changes`, `### Added`, `### Changed`, `### Fixed`, `### Removed`.
-
-Rules:
-
-- Add a changelog entry for every user-facing, release-relevant change.
-- All new entries go under `## [Unreleased]`. Read the section first and append to existing subsections; never duplicate section headers.
-- Do not add entries for purely internal cleanup, refactors, tests, or documentation-only changes unless they affect released behavior or release operations.
-- Released version sections are immutable; never modify them.
-
-Style:
-
-- Write changelogs concise, product-facing, and focused on observable behavior.
-- Describe what changed for users, not the implementation details, commit work, or the wording of the request.
-- Use plain past-tense release-note phrasing: `Added ...`, `Changed ...`, `Fixed ...`, `Removed ...`.
-- Prefer one clear sentence. Add a second sentence only when needed to explain user impact or important release behavior.
-- Mention technical details only when they are part of the user-facing surface, such as a command, setting, file type, provider, or platform.
-- Avoid entries like `Implemented requested sidebar refactor`; write `Changed the sidebar to keep project actions visible while resizing the window`.
-
-Attribution:
-
-- Internal issue fixes: `Fixed foo bar ([#123](https://github.com/mattiacerutti/supernova/issues/123))`
-- External contributions: `Added feature X ([#456](https://github.com/mattiacerutti/supernova/pull/456) by [@username](https://github.com/username))`
+Add changelog entries for user-facing, release-relevant changes under `## [Unreleased]` in `CHANGELOG.md`. Internal refactors, tests, and documentation-only changes don't need entries unless they affect released behavior or release operations.

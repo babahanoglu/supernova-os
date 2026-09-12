@@ -1,8 +1,10 @@
-# web package agents.md
+# Web
+
+Conventions for `packages/web`. See [Coding standards](coding-standards.md) for shared TypeScript rules.
 
 ## Language and naming
 
-- Components/hooks are PascalCase; files stay kebab-case (`auth-wrapper.tsx`, `text-field.tsx`).
+- Components are PascalCase; hooks use descriptive `useX` names. Files stay kebab-case (`auth-wrapper.tsx`, `text-field.tsx`).
 - Destructure props inside the body: `function Component(props: ComponentProps) { const {foo} = props; }`.
 
 ## Project structure and architecture
@@ -10,7 +12,7 @@
 - Maintain feature-first organization under `src/features/<feature>`.
 - Feature code lives under `src/features/<feature>/{pages,components,hooks,stores,types,lib,utils}` as needed.
 - Route/page-level components live in `src/features/<feature>/pages`.
-- Feature-specific UI lives in `src/features/<feature>/components`, grouped by domain when useful or when too much files are in the root /components folder, making it hard to navigate.
+- Feature-specific UI lives in `src/features/<feature>/components`, grouped by domain when a flat components folder becomes hard to navigate.
 - Feature hooks live in `src/features/<feature>/hooks`.
 - API hooks live in `src/features/<feature>/hooks/api`, grouped by domain when a feature has multiple query/mutation families.
 - Feature `lib` folders contain feature-specific domain logic, state transformations, mappers, parsers, render-item builders, and other meaningful behavior that is not UI or React-specific.
@@ -23,9 +25,9 @@
 ## Code standards
 
 - Keep components small and focused; compose smaller pieces instead of growing prop lists and nested conditionals. Extract reusable UI into shared components and typed props interfaces.
-- Co-locate state with its owner and derive computed values instead of storing them. Keep `useEffect` scarce, with complete dependency arrays and cleanups for subscriptions/timeouts.
-- In most cases React 19 auto-memoizes variables and functions, so avoid `useMemo` and `useCallback` unless you have a specific need or the operation is particularly performance-heavy.
-- React 19 auto-forwards refs, so avoid `forwardRef` unless you have a rare interop need.
+- Co-locate state with its owner and derive computed values instead of storing them. Do not call `useEffect` directly.
+- The web build enables React Compiler. Avoid `useMemo` and `useCallback` unless there is a specific need; React 19 alone does not provide automatic memoization.
+- React 19 accepts refs as props. Avoid `forwardRef` unless required for interop.
 - Avoid prop drilling; lift shared data to a feature-level context or custom hook. Keep hook names descriptive (`useLoginWithEmail`, `useAuthStatus`).
 - Avoid duplicating mutation result data into local state when it can be derived from the mutation result.
 
@@ -44,7 +46,7 @@
 - Only override primitive styles such as hover effects, text colors, spacing, or borders if explicitly requested by the user.
 - When designing new UI, respect the app's existing design language for colors, typography, icon/text sizes, layout positioning, interaction flows, motion, and animation timing.
 - Use semantic tailwind utilities (`text-xs`, `p-2`, `rounded-full`, etc.) over arbitrary pixel/rem size. Avoid things like `text-[10px]`, `p-[1.3rem]`, `rounded-[13px]`.
-- Use the shared `cn` helper from `@/lib/cn.ts` for conditional class names so `clsx` handles conditions and `tailwind-merge` resolves conflicting Tailwind utilities.
+- Use the shared `cn` helper from `@/lib/cn` for conditional class names so `clsx` handles conditions and `tailwind-merge` resolves conflicting Tailwind utilities.
 - For multi-step modal/dialog flows, prefer one shared dialog shell with swapped content instead of multiple dialogs that close/open between steps.
 
 ### RPC hooks
@@ -55,7 +57,7 @@
 
 ## Testing
 
-Use the `writing-good-tests` skill when writing or reviewing tests.
+See [Development](development.md#verification) for verification and the test workflow.
 
 - Add tests only for important user-facing behavior, bug fixes, regression-prone flows, and critical lifecycle behavior that would be costly to break.
 - Avoid overtesting hooks, small components, trivial rendering, styling, or implementation details unless they protect an important lifecycle or user-visible regression.

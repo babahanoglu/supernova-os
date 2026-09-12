@@ -1,6 +1,8 @@
-# contracts package agents.md
+# Contracts
 
-## Contract Structure
+Conventions for `packages/contracts`. See [Coding standards](coding-standards.md) for shared TypeScript rules.
+
+## Contract structure
 
 - Keep each domain under `src/<domain>`.
 - Keep reusable domain schemas under `src/<domain>/schemas`.
@@ -9,13 +11,15 @@
 
 ## Exports
 
+These public contract entry points are the exception to the shared no-barrel rule.
+
 - Add an `index.ts` barrel file in every `schemas` folder.
 - Add an `index.ts` barrel file in every `procedures` folder.
 - Import shared domain schemas from `@supernova/contracts/<domain>/schemas`.
 - Import RPC procedure contracts from `@supernova/contracts/<domain>/procedures`.
 - Import RPC definitions from `@supernova/contracts/<domain>/rpc`.
 
-## Schema Organization
+## Schema organization
 
 - In schema and procedure files, declare all exported schemas/classes first.
 - Put all exported interfaces and types below the schema/class declarations.

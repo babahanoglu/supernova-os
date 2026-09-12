@@ -1,8 +1,10 @@
-# agent-runtime Package Guidance
+# Agent runtime
+
+See [Coding standards](coding-standards.md) for shared TypeScript rules.
 
 ## Purpose
 
-`packages/agent-runtime` owns thes runtime integration layer for Supernova. It provides Effect services and live layers for provider SDKs, filesystem/runtime boundaries, sessions, streams, and related execution concerns.
+`packages/agent-runtime` owns the runtime integration layer for Supernova. It provides Effect services and live layers for provider SDKs, filesystem/runtime boundaries, sessions, streams, and related execution concerns.
 
 This package should stay focused on runtime behavior and provider integration. Shared serializable contracts belong in `@supernova/contracts`, and UI or server routing concerns belong outside this package.
 
@@ -40,7 +42,7 @@ This package should stay focused on runtime behavior and provider integration. S
 
 ## Testing
 
-Use the `writing-good-tests` skill when writing or reviewing tests.
+See [Development](development.md#verification) for verification and the test workflow.
 
 - Keep test folders aligned with layer boundaries under `src`, split by test category. For example, unit tests for `src/layers/session-runtime` should live under `tests/unit/layers/session-runtime`, and integration tests for `src/layers/folders` should live under `tests/integration/layers/folders`.
 - Add tests for critical runtime behavior, bug fixes, failure handling, stream/session lifecycle behavior, persistence, emitted events, and cleanup.

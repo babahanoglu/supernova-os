@@ -6,7 +6,9 @@ The workflow creates a release-prep commit, builds desktop artifacts, and publis
 
 ## Changelog
 
-Add release notes under `## [Unreleased]` in `CHANGELOG.md` as changes are made.
+Add release notes under `## [Unreleased]` in the root [CHANGELOG.md](../../CHANGELOG.md) for user-facing, release-relevant changes. Internal cleanup, refactors, tests, and documentation-only changes need no entry unless they affect released behavior or release operations.
+
+Read the unreleased section first and append to an existing subsection; never duplicate headers. Released version sections are immutable.
 
 Use these sections:
 
@@ -19,6 +21,18 @@ Use these sections:
 When a release is run, the workflow moves the current `## [Unreleased]` entries into a new version section, for example `## [0.1.0]`, and uses that section as the GitHub release notes.
 
 Do not create the version section manually.
+
+### Entry style
+
+- Use one concise, product-facing sentence describing observable behavior, not implementation work or the wording of the request.
+- Use plain past tense: `Added ...`, `Changed ...`, `Fixed ...`, or `Removed ...`. Add a second sentence only to explain important user or release impact.
+- Mention technical details only when they are part of the user-facing surface, such as a command, setting, file type, provider, or platform.
+- Write `Changed the sidebar to keep project actions visible while resizing the window`, not `Implemented requested sidebar refactor`.
+
+Attribution:
+
+- Internal issue fixes: `Fixed foo bar ([#123](https://github.com/mattiacerutti/supernova/issues/123))`
+- External contributions: `Added feature X ([#456](https://github.com/mattiacerutti/supernova/pull/456) by [@username](https://github.com/username))`
 
 ## Version inputs
 

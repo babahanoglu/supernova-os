@@ -63,7 +63,7 @@ Supernova is a Bun/Turborepo workspace:
 - `packages/agent-runtime` — Pi SDK integration and runtime services
 - `packages/contracts` — shared RPC contracts
 
-For architecture and development guidance, see [`docs/`](docs/).
+For architecture and development guidance, see [internal documentation](docs/internal/README.md). User guides live in [`docs/`](docs/README.md).
 
 ## License
 
