@@ -22,17 +22,21 @@ export type IconName =
   | "check"
   | "chevron-down"
   | "chevron-right"
+  | "columns"
   | "compact"
   | "copy"
   | "corner-left-up"
   | "edit"
   | "file"
   | "filter"
+  | "fold-vertical"
   | "folder"
   | "folder-open"
   | "folder-plus"
+  | "folders"
   | "gauge"
   | "git-branch"
+  | "git-commit"
   | "globe"
   | "key"
   | "image"
@@ -43,6 +47,7 @@ export type IconName =
   | "more-horizontal"
   | "new-session"
   | "panel-left"
+  | "panel-right"
   | "panel-top"
   | "palette"
   | "paperclip"
@@ -62,8 +67,10 @@ export type IconName =
   | "star-filled"
   | "stop"
   | "sun"
+  | "terminal"
   | "trash"
   | "undo"
+  | "unfold-vertical"
   | "update"
   | "user"
   | "workflow"
@@ -85,17 +92,21 @@ const icons = {
   check: getStaticIcon(lucideIcons, "check"),
   "chevron-down": getStaticIcon(lucideIcons, "chevron-down"),
   "chevron-right": getStaticIcon(lucideIcons, "chevron-right"),
+  columns: getStaticIcon(lucideIcons, "columns-2"),
   compact: getStaticIcon(lucideIcons, "minimize-2"),
   copy: getStaticIcon(lucideIcons, "copy"),
   "corner-left-up": getStaticIcon(lucideIcons, "corner-left-up"),
   edit: getStaticIcon(cuidaIcons, "edit-outline"),
   file: getStaticIcon(lucideIcons, "file"),
   filter: getStaticIcon(lucideIcons, "list-filter"),
+  "fold-vertical": getStaticIcon(lucideIcons, "fold-vertical"),
   folder: getStaticIcon(cuidaIcons, "folder-outline"),
   "folder-open": getStaticIcon(fluentIcons, "folder-open-24-regular"),
   "folder-plus": getStaticIcon(mdiIcons, "create-new-folder-outline"),
+  folders: getStaticIcon(lucideIcons, "folders"),
   gauge: getStaticIcon(lucideIcons, "gauge"),
   "git-branch": getStaticIcon(lucideIcons, "git-branch"),
+  "git-commit": getStaticIcon(lucideIcons, "git-commit-horizontal"),
   globe: getStaticIcon(lucideIcons, "globe"),
   image: getStaticIcon(lucideIcons, "image"),
   key: getStaticIcon(lucideIcons, "key-round"),
@@ -106,6 +117,7 @@ const icons = {
   "more-horizontal": getStaticIcon(lucideIcons, "more-horizontal"),
   "new-session": getStaticIcon(cuidaIcons, "edit-outline"),
   "panel-left": getStaticIcon(tablerIcons, "layout-sidebar"),
+  "panel-right": getStaticIcon(tablerIcons, "layout-sidebar-right"),
   "panel-top": getStaticIcon(lucideIcons, "panel-top"),
   palette: getStaticIcon(lucideIcons, "palette"),
   paperclip: getStaticIcon(lucideIcons, "paperclip"),
@@ -125,8 +137,10 @@ const icons = {
   "star-filled": getStaticIcon(iconoirIcons, "star-solid"),
   stop: getStaticIcon(materialSymbolsIcons, "stop-rounded"),
   sun: getStaticIcon(lucideIcons, "sun"),
+  terminal: getStaticIcon(lucideIcons, "square-terminal"),
   trash: getStaticIcon(lucideIcons, "trash-2"),
   undo: getStaticIcon(lucideIcons, "undo-2"),
+  "unfold-vertical": getStaticIcon(lucideIcons, "unfold-vertical"),
   update: getStaticIcon(fluentIcons, "arrow-up-16-filled"),
   user: getStaticIcon(lucideIcons, "user"),
   workflow: getStaticIcon(lucideIcons, "workflow"),

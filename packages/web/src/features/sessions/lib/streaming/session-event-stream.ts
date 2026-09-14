@@ -59,6 +59,12 @@ function applyEvent(input: {event: SessionStreamEvent; queryClient: QueryClient}
     applyProjectSessionSummary({projectPath: event.projectPath, queryClient, sessionId: event.sessionId, summary: event.summary});
   }
 
+  // The agent may have touched the working tree during the turn.
+  if (event.type === "session.agent.ended") {
+    const projectPath = queryClient.getQueryData<Session>(sessionQueryKey(event.sessionId))?.projectPath;
+    if (projectPath) void queryClient.invalidateQueries({queryKey: ["workspace", projectPath]});
+  }
+
   useSessionLiveStore.getState().applyEvent(event);
 }
 
