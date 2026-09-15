@@ -5,6 +5,7 @@ import IconButton from "@/components/ui/icon-button";
 import type {MouseEvent} from "react";
 import {useState} from "react";
 import SidebarActionButton from "@/features/sidebar/components/sidebar-action-button";
+import UpdateButton from "@/features/updates/components/update-button";
 import OpenProjectDialog from "@/features/projects/components/open-project-dialog";
 import SortableProjectList from "@/features/projects/components/project-list/sortable-project-list";
 import SearchSessionsDialog from "@/features/projects/components/search-sessions-dialog";
@@ -150,15 +151,16 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <div className="px-3 pb-2 pt-2">
+      <div className="flex items-center gap-2 px-3 pb-2 pt-2">
         <Link
-          className="flex w-full items-center gap-2 rounded-xl corner-superellipse/1.3 px-2 py-1.5 text-left text-sm text-ink hover:bg-overlay-hover hover:text-ink-strong"
+          className="flex items-center gap-2 rounded-xl corner-superellipse/1.3 px-2 py-1.5 text-left text-sm text-ink hover:bg-overlay-hover hover:text-ink-strong"
           to="/settings"
         >
           <Icon name="settings" size="sm" />
           <span>Settings</span>
           {window.desktopApi?.nightly && <span className="text-xs text-ink-faint">Nightly</span>}
         </Link>
+        <UpdateButton className="ml-auto shrink-0" />
       </div>
       <OpenProjectDialog onClose={handleCloseProjectDialog} onOpenProject={handleOpenProject} open={openProjectDialogOpen} />
       <SearchSessionsDialog onClose={handleCloseSearchSessionsDialog} open={searchSessionsDialogOpen} />

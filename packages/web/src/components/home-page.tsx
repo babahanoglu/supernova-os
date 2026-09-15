@@ -6,7 +6,6 @@ import Icon from "@/components/ui/icon";
 import IconButton from "@/components/ui/icon-button";
 import SidebarLayout from "@/features/sidebar/components/sidebar-layout";
 import Sidebar from "@/features/sidebar/components/sidebar";
-import UpdateButton from "@/features/updates/components/update-button";
 import {useSidebarVisibility} from "@/features/sidebar/hooks/use-sidebar-visibility";
 import {MIN_SIDEBAR_WIDTH, useSidebarSectionsStore} from "@/features/sidebar/stores/sidebar-store";
 import {minWorkspacePanelWidth} from "@/features/workspace/lib/workspace-panel-width";
@@ -68,7 +67,6 @@ export default function HomePage(props: HomePageProps) {
           </IconButton>
         </>
       )}
-      {sidebarVisible && <UpdateButton className="ml-auto" />}
     </>
   );
 
