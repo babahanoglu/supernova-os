@@ -49,34 +49,40 @@ export default function FileViewer(props: FileViewerProps) {
   const {actions, children, deleted = false, explorer, path} = props;
   const [explorerVisible, setExplorerVisible] = useState(true);
 
-  if (path === null) return <div className="flex min-h-0 flex-1 flex-col">{explorer}</div>;
+  const hasFile = path !== null;
+  const showExplorer = !hasFile || explorerVisible;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <header className="flex h-9 shrink-0 items-center justify-between gap-3 border-b border-border-muted px-3 text-sm">
-        <div className="flex min-w-0 items-center">
-          <PathBreadcrumb deleted={deleted} path={path} />
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          {actions}
-          <IconButton
-            className={cn("size-7 text-ink-muted", explorerVisible && "bg-overlay-hover text-ink")}
-            label={explorerVisible ? "Hide explorer" : "Show explorer"}
-            onClick={() => setExplorerVisible((visible) => !visible)}
-            variant="primary"
-          >
-            <Icon name="folders" size="sm" />
-          </IconButton>
-        </div>
-      </header>
+      {hasFile && (
+        <header className="flex h-9 shrink-0 items-center justify-between gap-3 border-b border-border-muted px-3 text-sm">
+          <div className="flex min-w-0 items-center">
+            <PathBreadcrumb deleted={deleted} path={path} />
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            {actions}
+            <IconButton
+              className={cn("size-7 text-ink-muted", explorerVisible && "bg-overlay-hover text-ink")}
+              label={explorerVisible ? "Hide explorer" : "Show explorer"}
+              onClick={() => setExplorerVisible((visible) => !visible)}
+              variant="primary"
+            >
+              <Icon name="folders" size="sm" />
+            </IconButton>
+          </div>
+        </header>
+      )}
 
       <div className="@container flex min-h-0 flex-1">
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
+        {hasFile && <div className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>}
         <div
-          className={cn("min-h-0 shrink-0 overflow-hidden transition-[width] duration-200 ease-out", explorerVisible ? "w-[min(20rem,48%)] border-l border-border-muted" : "w-0")}
-          inert={!explorerVisible}
+          className={cn(
+            "min-h-0 shrink-0 overflow-hidden transition-[width] duration-200 ease-out",
+            !hasFile ? "w-full" : showExplorer ? "w-[min(20rem,48%)] border-l border-border-muted" : "w-0"
+          )}
+          inert={!showExplorer}
         >
-          <div className="flex h-full w-[min(20rem,48cqw)] min-h-0 flex-col">{explorer}</div>
+          <div className={cn("flex h-full min-h-0 flex-col", hasFile ? "w-[min(20rem,48cqw)]" : "w-full")}>{explorer}</div>
         </div>
       </div>
     </div>
