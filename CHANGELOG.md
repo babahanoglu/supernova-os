@@ -8,6 +8,16 @@ All notable changes to Supernova are documented in this file.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.3.0]
+
+### Added
+
 - Added a workspace panel in sessions for browsing project files and reviewing Git changes with unified or split diffs, including repository selection for multi-repository projects.
 
 ### Changed
@@ -18,8 +28,6 @@ All notable changes to Supernova are documented in this file.
 ### Fixed
 
 - Fixed sending a message right after selecting a newly available model (for example, right after adding a provider package) failing with "Selected model is not available." until the message was resent.
-
-### Removed
 
 ## [0.2.0]
 
