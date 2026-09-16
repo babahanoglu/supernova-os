@@ -8,6 +8,8 @@ All notable changes to Supernova are documented in this file.
 
 ### Added
 
+- Added a workspace panel in sessions for browsing project files and reviewing Git changes with unified or split diffs, including repository selection for multi-repository projects.
+
 ### Changed
 
 - Changed the update button location to the far right of the sidebar footer, opposite Settings and Nightly.
