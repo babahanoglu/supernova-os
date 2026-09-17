@@ -10,6 +10,8 @@ All notable changes to Supernova are documented in this file.
 
 ### Changed
 
+- Updated the desktop shell to Electron 44 (Chromium 152), which includes upstream fixes for GPU rendering glitches in translucent windows on macOS.
+
 ### Fixed
 
 - Fixed workspace folders losing their expanded state when opening a file from the full-panel explorer.
