@@ -43,7 +43,7 @@ function SuggestionPanel(props: SuggestionPanelProps) {
 
   return (
     <div className={cn("absolute -inset-x-3 bottom-full z-40 mb-4", className)}>
-      <div className="overflow-hidden rounded-xl border border-border bg-surface-drawer text-ink">
+      <div className="overflow-hidden rounded-2xl corner-superellipse/1.3 border border-border bg-surface-drawer text-ink">
         <div className="scroll-fade-y max-h-64 overflow-y-auto p-1">{children}</div>
       </div>
     </div>
@@ -168,7 +168,7 @@ export default function ComposerSuggestionMenu(props: ComposerSuggestionMenuProp
 
           {!query.isError &&
             sections.map((section) => (
-              <div className="pb-1" key={section.title}>
+              <div className="pb-1 last:pb-0" key={section.title}>
                 <MenuLabel>{section.title}</MenuLabel>
                 {section.items.map((item) => (
                   <ComposerSuggestionItemRow

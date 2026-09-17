@@ -15,6 +15,7 @@ All notable changes to Supernova are documented in this file.
 ### Fixed
 
 - Fixed workspace folders losing their expanded state when opening a file from the full-panel explorer.
+- Fixed menu and suggestion panel corners not matching the rounding of the items inside them.
 
 ### Removed
 
